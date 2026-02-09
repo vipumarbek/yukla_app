@@ -1,17 +1,51 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+// lib/services/api_service.dart
 
 class ApiService {
-  static const String baseUrl = 'http://localhost:3000';
-
-  /// Backend ishlayaptimi – test
+  /// Backendni tekshirish (hozircha fake)
   static Future<String> testBackend() async {
-    final res = await http.get(Uri.parse('$baseUrl/test'));
+    // server yo‘qligi uchun vaqtincha kutish
+    await Future.delayed(const Duration(seconds: 1));
+    return "API Service ishlayapti ✅";
+  }
 
-    if (res.statusCode == 200) {
-      return jsonDecode(res.body)['message'];
-    } else {
-      throw Exception('Backend ulanmadı');
-    }
+  /// Fake orderlar (keyin backenddan keladi)
+  static Future<List<Map<String, dynamic>>> getOrders() async {
+    await Future.delayed(const Duration(seconds: 1));
+
+    return [
+      {
+        "id": 1,
+        "from": "Toshkent",
+        "to": "Samarqand",
+        "cargo": "Meva",
+        "truck": "Tentli",
+        "price": 100000,
+        "phone": "+998901234567",
+      },
+      {
+        "id": 2,
+        "from": "Andijon",
+        "to": "Buxoro",
+        "cargo": "Qurilish material",
+        "truck": "Refrijerator",
+        "price": 200000,
+        "phone": "+998931112233",
+      },
+    ];
+  }
+
+  /// Yangi order qo‘shish (hozircha fake)
+  static Future<bool> createOrder({
+    required String from,
+    required String to,
+    required String cargo,
+    required String truck,
+    required String phone,
+    required int price,
+  }) async {
+    await Future.delayed(const Duration(seconds: 1));
+
+    // Hozircha har doim true qaytaramiz
+    return true;
   }
 }
