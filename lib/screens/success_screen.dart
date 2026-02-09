@@ -1,0 +1,1 @@
+Text("Buyurtma muvaffaqiyatli yuborildi ✅")
