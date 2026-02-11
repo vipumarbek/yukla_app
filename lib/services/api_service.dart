@@ -2,23 +2,23 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String baseUrl = "http://10.0.2.2:3000";
+  final String baseUrl = "http://10.0.2.2:3000"; // backend portingni yoz
 
   Future<List<dynamic>> getOrders() async {
     final response = await http.get(Uri.parse("$baseUrl/orders"));
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      return json.decode(response.body);
     } else {
-      return [];
+      throw Exception("Failed to load orders");
     }
   }
 
-  Future<void> addOrder(String name) async {
+  Future<void> addOrder(String title) async {
     await http.post(
       Uri.parse("$baseUrl/orders"),
       headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"name": name}),
+      body: json.encode({"title": title}),
     );
   }
 }
