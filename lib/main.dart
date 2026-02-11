@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart';
+import 'homeScreen.dart'; // yoki fayl noming qanday bo‘lsa
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(   // ❌ const ni olib tashla
       debugShowCheckedModeBanner: false,
       home: HomeScreen(),
     );
