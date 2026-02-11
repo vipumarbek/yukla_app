@@ -1,22 +1,33 @@
 name: yukla_app
-description: Order va admin panel ilovasi
+description: A new Flutter project.
+
 publish_to: 'none'
 
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  http: ^0.13.6
 
+  cupertino_icons: ^1.0.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.0
+
+  flutter_launcher_icons: ^0.13.1
 
 flutter:
+
   uses-material-design: true
+
+  assets:
+    - assets/logo.png
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/logo.png"
