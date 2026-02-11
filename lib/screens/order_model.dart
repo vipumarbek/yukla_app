@@ -1,11 +1,19 @@
-final success = await PaymentService.addOrder({
-  "title": "Telefon buyurtma",
-  "price": 15000,
-});
+class Order {
+  final String id;
+  final String title;
+  final int price;
 
-if (success) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (_) => const SuccessScreen()),
-  );
+  Order({
+    required this.id,
+    required this.title,
+    required this.price,
+  });
+
+  factory Order.fromJson(Map<String, dynamic> json) {
+    return Order(
+      id: json['_id'],
+      title: json['title'],
+      price: json['price'],
+    );
+  }
 }
