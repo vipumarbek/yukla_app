@@ -1,35 +1,66 @@
 import 'package:flutter/material.dart';
-import '../services/auth_service.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
-  @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
-}
-
-class _RegisterScreenState extends State<RegisterScreen> {
-  final email = TextEditingController();
-  final password = TextEditingController();
-
-  void register() async {
-    final ok = await AuthService.register(email.text, password.text);
-    if (ok) {
-      Navigator.pop(context);
-    }
-  }
+class PaymentScreen extends StatelessWidget {
+  const PaymentScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Register")),
+      appBar: AppBar(
+        title: Text("To‘lov"),
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextField(controller: email, decoration: const InputDecoration(labelText: "Email")),
-            TextField(controller: password, decoration: const InputDecoration(labelText: "Password"), obscureText: true),
-            const SizedBox(height: 16),
-            ElevatedButton(onPressed: register, child: const Text("Create account")),
+
+            Icon(Icons.credit_card, size: 80, color: Colors.green),
+
+            SizedBox(height: 20),
+
+            Text(
+              "To‘lov qilish uchun quyidagi kartaga pul o‘tkazing:",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16),
+            ),
+
+            SizedBox(height: 20),
+
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    "**** **** **** 4869",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text("To‘lov summasi: 10 000 so'm"),
+                ],
+              ),
+            ),
+
+            SizedBox(height: 30),
+
+            ElevatedButton(
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text("To‘lov muvaffaqiyatli amalga oshirildi!"),
+                  ),
+                );
+              },
+              child: Text("To‘lovni tasdiqlash"),
+            ),
           ],
         ),
       ),
