@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/truck_card.dart';
-import 'map_screen.dart';
-import 'payment_screen.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '../services/api_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,130 +10,100 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-  LatLng? fromLocation;
-  LatLng? toLocation;
-  DateTime? selectedDate;
-  TimeOfDay? selectedTime;
-  String? selectedTruck;
+  String selectedTruck = "Labo";
 
-  Future pickFrom() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const MapScreen()),
-    );
-    if (result != null) setState(() => fromLocation = result);
-  }
+  final fromController = TextEditingController();
+  final toController = TextEditingController();
+  final dateController = TextEditingController();
+  final timeController = TextEditingController();
 
-  Future pickTo() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const MapScreen()),
-    );
-    if (result != null) setState(() => toLocation = result);
-  }
+  void createOrder() async {
 
-  Future pickDate() async {
-    final date = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2030),
-    );
-    if (date != null) setState(() => selectedDate = date);
-  }
+    if (fromController.text.isEmpty ||
+        toController.text.isEmpty ||
+        dateController.text.isEmpty ||
+        timeController.text.isEmpty) {
 
-  Future pickTime() async {
-    final time = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-    if (time != null) setState(() => selectedTime = time);
-  }
-
-  void calculate() {
-    if (fromLocation == null ||
-        toLocation == null ||
-        selectedDate == null ||
-        selectedTime == null ||
-        selectedTruck == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Barcha ma'lumotlarni to‘ldiring")),
+        const SnackBar(content: Text("Barcha maydonlarni to‘ldiring")),
       );
       return;
     }
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const PaymentScreen(amount: 10000),
-      ),
-    );
+    bool success = await ApiService.createOrder({
+      "truck": selectedTruck,
+      "from": fromController.text,
+      "to": toController.text,
+      "date": dateController.text,
+      "time": timeController.text,
+    });
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Buyurtma yuborildi")),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Xatolik yuz berdi")),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Yuk Buyurtma")),
-      body: SingleChildScrollView(
+      appBar: AppBar(title: const Text("Yukla App")),
+      body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
 
-            ElevatedButton(onPressed: pickFrom, child: const Text("Qayerdan (Xarita)")),
-            ElevatedButton(onPressed: pickTo, child: const Text("Qayerga (Xarita)")),
-            ElevatedButton(onPressed: pickDate, child: const Text("Sana tanlash")),
-            ElevatedButton(onPressed: pickTime, child: const Text("Vaqt tanlash")),
+              DropdownButton<String>(
+                value: selectedTruck,
+                isExpanded: true,
+                items: const [
+                  DropdownMenuItem(value: "Labo", child: Text("Labo")),
+                  DropdownMenuItem(value: "Bongo", child: Text("Bongo")),
+                  DropdownMenuItem(value: "Isuzu 5T", child: Text("Isuzu 5T")),
+                  DropdownMenuItem(value: "Isuzu 10T", child: Text("Isuzu 10T")),
+                  DropdownMenuItem(value: "Fura", child: Text("Fura")),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    selectedTruck = value!;
+                  });
+                },
+              ),
 
-            const SizedBox(height: 20),
-            const Text("Mashina tanlang", style: TextStyle(fontSize: 18)),
+              TextField(
+                controller: fromController,
+                decoration: const InputDecoration(labelText: "Qayerdan"),
+              ),
 
-            TruckCard(
-              title: "Labo",
-              size: "2.5 x 1.5 x 1.3",
-              image: "assets/trucks/labo.png",
-              selected: selectedTruck == "Labo",
-              onTap: () => setState(() => selectedTruck = "Labo"),
-            ),
+              TextField(
+                controller: toController,
+                decoration: const InputDecoration(labelText: "Qayerga"),
+              ),
 
-            TruckCard(
-              title: "Bongo",
-              size: "3 x 1.7 x 1.7",
-              image: "assets/trucks/bongo.png",
-              selected: selectedTruck == "Bongo",
-              onTap: () => setState(() => selectedTruck = "Bongo"),
-            ),
+              TextField(
+                controller: dateController,
+                decoration: const InputDecoration(labelText: "Sana"),
+              ),
 
-            TruckCard(
-              title: "Isuzu 5T",
-              size: "5.2 x 2.2 x 2.2",
-              image: "assets/trucks/isuzu5.png",
-              selected: selectedTruck == "Isuzu 5T",
-              onTap: () => setState(() => selectedTruck = "Isuzu 5T"),
-            ),
+              TextField(
+                controller: timeController,
+                decoration: const InputDecoration(labelText: "Vaqt"),
+              ),
 
-            TruckCard(
-              title: "Isuzu 10T",
-              size: "7.0 x 2.4 x 2.4",
-              image: "assets/trucks/isuzu10.png",
-              selected: selectedTruck == "Isuzu 10T",
-              onTap: () => setState(() => selectedTruck = "Isuzu 10T"),
-            ),
+              const SizedBox(height: 20),
 
-            TruckCard(
-              title: "Fura",
-              size: "13.6 x 2.45 x 2.7",
-              image: "assets/trucks/fura.png",
-              selected: selectedTruck == "Fura",
-              onTap: () => setState(() => selectedTruck = "Fura"),
-            ),
-
-            const SizedBox(height: 20),
-
-            ElevatedButton(
-              onPressed: calculate,
-              child: const Text("Hisoblash (10 000 so‘m)"),
-            )
-          ],
+              ElevatedButton(
+                onPressed: createOrder,
+                child: const Text("Buyurtma berish"),
+              )
+            ],
+          ),
         ),
       ),
     );

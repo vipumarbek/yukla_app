@@ -2,23 +2,42 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String baseUrl = "http://10.0.2.2:3000"; // backend portingni yoz
+  static const String baseUrl = "http://10.0.2.2:5000";
 
-  Future<List<dynamic>> getOrders() async {
-    final response = await http.get(Uri.parse("$baseUrl/orders"));
+  static Future<bool> register(String name, String phone, String password) async {
+    final response = await http.post(
+      Uri.parse("$baseUrl/register"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "name": name,
+        "phone": phone,
+        "password": password,
+      }),
+    );
 
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception("Failed to load orders");
-    }
+    return response.statusCode == 201;
   }
 
-  Future<void> addOrder(String title) async {
-    await http.post(
+  static Future<bool> login(String phone, String password) async {
+    final response = await http.post(
+      Uri.parse("$baseUrl/login"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "phone": phone,
+        "password": password,
+      }),
+    );
+
+    return response.statusCode == 200;
+  }
+
+  static Future<bool> createOrder(Map<String, dynamic> data) async {
+    final response = await http.post(
       Uri.parse("$baseUrl/orders"),
       headers: {"Content-Type": "application/json"},
-      body: json.encode({"title": title}),
+      body: jsonEncode(data),
     );
+
+    return response.statusCode == 201;
   }
 }
