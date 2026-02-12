@@ -9,36 +9,23 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  LatLng? selectedLocation;
+
+  GoogleMapController? mapController;
+
+  static const CameraPosition initialPosition = CameraPosition(
+    target: LatLng(41.2995, 69.2401), // Toshkent
+    zoom: 12,
+  );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Xaritadan tanlash")),
       body: GoogleMap(
-        initialCameraPosition: const CameraPosition(
-          target: LatLng(41.2995, 69.2401),
-          zoom: 12,
-        ),
-        onTap: (position) {
-          setState(() {
-            selectedLocation = position;
-          });
+        initialCameraPosition: initialPosition,
+        onMapCreated: (controller) {
+          mapController = controller;
         },
-        markers: selectedLocation == null
-            ? {}
-            : {
-                Marker(
-                  markerId: const MarkerId("point"),
-                  position: selectedLocation!,
-                )
-              },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pop(context, selectedLocation);
-        },
-        child: const Icon(Icons.check),
       ),
     );
   }

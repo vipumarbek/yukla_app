@@ -6,88 +6,65 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// MongoDB ulanish
 mongoose.connect('mongodb://127.0.0.1:27017/yukla_db')
     .then(() => console.log('MongoDB ulandi'))
     .catch(err => console.log(err));
 
-/* ================= USER SCHEMA ================= */
-
+// ================= USER SCHEMA =================
 const userSchema = new mongoose.Schema({
     name: String,
-    phone: String,
-    password: String,
+    email: String,
+    role: {
+        type: String,
+        default: "user"
+    }
 });
 
 const User = mongoose.model('User', userSchema);
 
-/* ================= ORDER SCHEMA ================= */
+// ================= GOOGLE LOGIN =================
+app.post('/google-login', async(req, res) => {
 
-const orderSchema = new mongoose.Schema({
-    truck: String,
-    from: String,
-    to: String,
-    date: String,
-    time: String,
-});
+    const { name, email } = req.body;
 
-const Order = mongoose.model('Order', orderSchema);
-
-/* ================= REGISTER ================= */
-
-app.post('/register', async(req, res) => {
-    try {
-        const { name, phone, password } = req.body;
-
-        const existingUser = await User.findOne({ phone });
-        if (existingUser) {
-            return res.status(400).json({ message: "Bu raqam allaqachon mavjud" });
-        }
-
-        const user = new User({ name, phone, password });
-        await user.save();
-
-        res.status(201).json({ message: "Ro‘yxatdan o‘tildi" });
-
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+    if (!email) {
+        return res.status(400).json({ message: "Email topilmadi" });
     }
-});
 
-/* ================= LOGIN ================= */
+    // User bazada bormi?
+    let user = await User.findOne({ email });
 
-app.post('/login', async(req, res) => {
-    try {
-        const { phone, password } = req.body;
+    // Agar yo‘q bo‘lsa yangi yaratamiz
+    if (!user) {
 
-        const user = await User.findOne({ phone, password });
+        let role = "user";
 
-        if (!user) {
-            return res.status(400).json({ message: "Login xato" });
+        // 🔥 Admin ajratish
+        if (email === "vipumarbek@gmail.com") {
+            role = "admin";
         }
 
-        res.json({
-            message: "Muvaffaqiyatli login",
-            user: user
+        user = new User({
+            name,
+            email,
+            role
         });
 
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+        await user.save();
     }
+
+    res.json({
+        message: "Success",
+        role: user.role
+    });
 });
 
-/* ================= CREATE ORDER ================= */
-
-app.post('/orders', async(req, res) => {
-    try {
-        const order = new Order(req.body);
-        await order.save();
-        res.status(201).json(order);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+// ================= GET USERS (Admin uchun) =================
+app.get('/users', async(req, res) => {
+    const users = await User.find();
+    res.json(users);
 });
-
-/* ================= START SERVER ================= */
 
 app.listen(5000, () => {
     console.log('Server 5000-portda ishga tushdi');
