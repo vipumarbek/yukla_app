@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'screens/login_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // 🔥 Firebase ishga tushirish
+  await Firebase.initializeApp();
+
   runApp(const MyApp());
 }
 
@@ -12,7 +18,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginScreen(),
+      title: 'YukLa',
+
+      // ❗ ROUTES, initialRoute YO‘Q
+      // ❗ Splash YO‘Q
+      // ❗ Introduction YO‘Q
+
+      home: const LoginScreen(),
     );
   }
 }

@@ -1,4 +1,4 @@
-package com.example.yukla_app
+package com.example.yuklaapp2
 
 import io.flutter.embedding.android.FlutterActivity
 
